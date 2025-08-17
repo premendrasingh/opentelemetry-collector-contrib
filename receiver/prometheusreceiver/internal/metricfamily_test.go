@@ -261,7 +261,7 @@ func TestMetricGroupData_toDistributionUnitTest(t *testing.T) {
 					lbls = tt.labels.Copy()
 				}
 				sRef, _ := getSeriesRef(nil, lbls, mp.mtype)
-				err := mp.addSeries(sRef, tv.metric, lbls, tv.at, tv.value)
+				err := mp.addSeries(nil, sRef, tv.metric, lbls, tv.at, tv.value)
 				if tt.wantErr {
 					if i != 0 {
 						require.Error(t, err)
@@ -452,7 +452,7 @@ func TestMetricGroupData_toExponentialDistributionUnitTest(t *testing.T) {
 					err = mp.addExponentialHistogramSeries(sRef, tv.metric, lbls, tv.at, nil, tv.floatHistogram)
 				default:
 					sRef, _ := getSeriesRef(nil, lbls, mp.mtype)
-					err = mp.addSeries(sRef, tv.metric, lbls, tv.at, tv.value)
+					err = mp.addSeries(nil, sRef, tv.metric, lbls, tv.at, tv.value)
 				}
 				if tt.wantErr {
 					if i != 0 {
@@ -738,7 +738,7 @@ func TestMetricGroupData_toSummaryUnitTest(t *testing.T) {
 				for i, scrape := range lbs.scrapes {
 					lb := lbs.labels.Copy()
 					sRef, _ := getSeriesRef(nil, lb, mp.mtype)
-					err := mp.addSeries(sRef, scrape.metric, lb, scrape.at, scrape.value)
+					err := mp.addSeries(nil, sRef, scrape.metric, lb, scrape.at, scrape.value)
 					if tt.wantErr {
 						// The first scrape won't have an error
 						if i != 0 {
@@ -879,7 +879,7 @@ func TestMetricGroupData_toNumberDataUnitTest(t *testing.T) {
 			for _, tv := range tt.scrapes {
 				lb := tt.labels.Copy()
 				sRef, _ := getSeriesRef(nil, lb, mp.mtype)
-				require.NoError(t, mp.addSeries(sRef, tv.metric, lb, tv.at, tv.value))
+				require.NoError(t, mp.addSeries(nil, sRef, tv.metric, lb, tv.at, tv.value))
 			}
 
 			require.Len(t, mp.groups, 1)

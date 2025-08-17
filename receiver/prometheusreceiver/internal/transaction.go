@@ -182,7 +182,7 @@ func (t *transaction) Append(_ storage.SeriesRef, ls labels.Labels, atMs int64, 
 	curMF := t.getOrCreateMetricFamily(*rKey, scope, metricName)
 
 	seriesRef := t.getSeriesRef(ls, curMF.mtype)
-	err = curMF.addSeries(seriesRef, metricName, ls, atMs, val)
+	err = curMF.addSeries(t.logger, seriesRef, metricName, ls, atMs, val)
 	if err != nil {
 		t.logger.Warn("failed to add datapoint", zap.Error(err), zap.String("metric_name", metricName), zap.Any("labels", ls))
 	}

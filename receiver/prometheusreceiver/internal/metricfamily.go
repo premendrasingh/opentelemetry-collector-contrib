@@ -5,6 +5,7 @@ package internal // import "github.com/open-telemetry/opentelemetry-collector-co
 
 import (
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"math"
 	"sort"
@@ -384,7 +385,7 @@ func (mf *metricFamily) loadMetricGroupOrCreate(groupKey uint64, ls labels.Label
 	return mg
 }
 
-func (mf *metricFamily) addSeries(seriesRef uint64, metricName string, ls labels.Labels, t int64, v float64) error {
+func (mf *metricFamily) addSeries(logger *zap.Logger, seriesRef uint64, metricName string, ls labels.Labels, t int64, v float64) error {
 	mg := mf.loadMetricGroupOrCreate(seriesRef, ls, t)
 	if mg.ts != t {
 		return fmt.Errorf("inconsistent timestamps on metric points for metric %v", metricName)
@@ -405,7 +406,10 @@ func (mf *metricFamily) addSeries(seriesRef uint64, metricName string, ls labels
 		default:
 			boundary, err := getBoundary(mf.mtype, ls)
 			if err != nil {
-				return err
+				if !errors.Is(err, errEmptyLeLabel) {
+					return err
+				}
+				logger.Warn("Histogram/Summary metric missing 'le' label", zap.String("metric", metricName), zap.String("labels", ls.String()))
 			}
 			mg.complexValue = append(mg.complexValue, &dataPoint{value: v, boundary: boundary})
 		}
