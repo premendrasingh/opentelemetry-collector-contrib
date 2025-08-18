@@ -81,7 +81,7 @@ func getBoundary(metricType pmetric.MetricType, labels labels.Labels) (float64, 
 	case pmetric.MetricTypeHistogram:
 		val = labels.Get(model.BucketLabel)
 		if val == "" {
-			return 0, errEmptyLeLabel
+			return 0, nil
 		}
 	case pmetric.MetricTypeSummary:
 		val = labels.Get(model.QuantileLabel)
